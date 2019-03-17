@@ -1,0 +1,6 @@
+config     SECURITY_GOMOLSM
+   bool     "GomoLSM support"
+   depends on SECURITY
+   default     n
+   help
+        introduction of GomoLSM
