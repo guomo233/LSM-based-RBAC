@@ -56,15 +56,15 @@ Linux安全模块（LSM）是Linux内核的一个轻量级通用访问控制框�
 
 将`/boot/config-'uname -r'`拷贝到源码根目录中，并重命名为`.config`，然后`make menuconfig`即可进行配置编译选项（如果失败需要`apt-get install libncurses5-dev`），对LSM而言，进入`Security options`
 
-![image](images/15.jpg)
+![image](images/15.png)
 
 将该模块选上，而将SELinux、Yama等其他安全模块都取消
 
-![image](images/16.jpg)
+![image](images/16.png)
 
 再将该模块选为默认安全模块
 
-![image](images/17.jpg)
+![image](images/17.png)
 
 接着即可编译内核：
 `make bzImage -jN && make modules -jN && make modules_install && make install`
