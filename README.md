@@ -30,7 +30,7 @@ Linux安全模块（LSM）是Linux内核的一个轻量级通用访问控制框�
 
 ![avatar](images/9.jpg)
 
-而`role2`拥有创建文件的权限但不拥有修改文件名的权限，
+而`role2`拥有创建文件的权限但不拥有修改文件名的权限
 
 ![avatar](images/5.jpg)
 
@@ -58,7 +58,7 @@ Linux安全模块（LSM）是Linux内核的一个轻量级通用访问控制框�
 
 ![avatar](images/13.jpg)
 
-#### 删除橘色
+#### 删除角色
 
 通过`-ud uid`可以取消uid用户所分配的角色
 
