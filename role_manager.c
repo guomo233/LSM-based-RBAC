@@ -5,6 +5,7 @@
 
 #define USER2ROLE_PATH "/etc/GomoLSM/user2role"
 #define ROLES_PATH "/etc/GomoLSM/roles"
+#define CONTROL_PATH "/etc/GomoLSM/control"
 #define MAX_ROLENAME 20
 #define PERMISSION_COUNT 2 //inode_create, inode_rename
 
@@ -318,6 +319,37 @@ int s2i (const char *s)
 	return res ;
 }
 
+int get_state ()
+{
+	FILE *fp = fopen (CONTROL_PATH, "rb") ;
+	int state ;
+
+	if (!fp)
+	{
+		printf ("file open failed\n") ;
+		return -1 ;
+	}
+	
+	fread(&state, sizeof(int), 1, fp) ;
+	
+	return state ;
+}
+
+int set_state (int state)
+{
+	FILE *fp = fopen (CONTROL_PATH, "wb") ;
+
+	if (!fp)
+	{
+		printf ("file open failed\n") ;
+		return 0 ;
+	}
+
+	fwrite (&state, sizeof(int), 1, fp) ;
+
+	return 1 ;
+}
+
 int main(int argc, char *argv[])
 {
 	int i ;
@@ -335,7 +367,7 @@ int main(int argc, char *argv[])
 	{
 		if (argc != 3)
 		{
-			printf ("Error: invalid number of arguments after -s\n") ;
+			printf ("Error: invalid arguments after -s\n") ;
 			return 0 ;
 		}
 			
@@ -359,7 +391,7 @@ int main(int argc, char *argv[])
 	{
 		if (argc != 4)
 		{
-			printf ("Error: invalid number of arguments after -ra\n") ;
+			printf ("Error: invalid arguments after -ra\n") ;
 			return 0 ;
 		}
 			
@@ -393,7 +425,7 @@ int main(int argc, char *argv[])
 	{
 		if (argc != 4)
 		{
-			printf ("Error: invalid number of arguments after -ua\n") ;
+			printf ("Error: invalid arguments after -ua\n") ;
 			return 0 ;
 		}
 		
@@ -416,7 +448,7 @@ int main(int argc, char *argv[])
 	{
 		if (argc != 3)
 		{
-			printf ("Error: invalid number of arguments after -rd\n") ;
+			printf ("Error: invalid arguments after -rd\n") ;
 			return 0 ;
 		}
 		
@@ -432,7 +464,7 @@ int main(int argc, char *argv[])
 	{
 		if (argc != 3)
 		{
-			printf ("Error: invalid number of arguments after -ud\n") ;
+			printf ("Error: invalid arguments after -ud\n") ;
 			return 0 ;
 		}
 		
@@ -455,7 +487,7 @@ int main(int argc, char *argv[])
 	{
 		if (argc != 4)
 		{
-			printf ("Error: invalid number of arguments after -rc\n") ;
+			printf ("Error: invalid arguments after -rc\n") ;
 			return 0 ;
 		}
 			
@@ -489,7 +521,7 @@ int main(int argc, char *argv[])
 	{
 		if (argc != 4)
 		{
-			printf ("Error: invalid number of arguments after -uc\n") ;
+			printf ("Error: invalid arguments after -uc\n") ;
 			return 0 ;
 		}
 		
@@ -508,6 +540,52 @@ int main(int argc, char *argv[])
 		return 0 ;
 	}
 
+	if (!strcmp(argv[1], "-state"))
+	{
+		if (argc > 2)
+		{
+			printf ("Error: invalid arguments after -state\n") ;
+			return 0 ;
+		}
+		
+		int state = get_state () ;
+		if (state == 1)
+			printf ("State: Enable\n") ;
+		else if (state == 0)
+			printf ("State: Disable\n") ;
+
+		return 0 ;
+	}
+
+	if (!strcmp(argv[1], "-enable"))
+	{
+		if (argc > 2)
+		{
+			printf ("Error: invalid arguments after -enable\n") ;
+			return 0 ;
+		}
+
+		if (set_state (1) == 1)
+			printf ("Enable!\n") ;
+
+		return 0 ;
+	}
+	
+	if (!strcmp(argv[1], "-disable"))
+	{
+		if (argc > 2)
+		{
+			printf ("Error: invalid arguments after -disable\n") ;
+			return 0 ;
+		}
+
+		if (set_state (0) == 1)
+			printf ("Disable!\n") ;
+
+		return 0 ;
+	}
+
 	printf ("Error: invalid argument option\n") ;
+
 	return 0 ;
 }

@@ -10,9 +10,10 @@
 #include <linux/slab.h>
 #include <asm/uaccess.h>
 
-#define MAX_ROLENAME 20
 #define USER2ROLE_PATH "/etc/GomoLSM/user2role"
 #define ROLES_PATH "/etc/GomoLSM/roles"
+#define CONTROL_PATH "/etc/GomoLSM/control"
+#define MAX_ROLENAME 20
 #define PERMISSION_COUNT 2 //inode_create, inode_rename
 
 int get_role (const int uid, char *role)
@@ -109,6 +110,31 @@ int role_permission (const char *role, const int op)
 	return res ;
 }
 
+int is_enable (void)
+{
+	struct file *fout = filp_open (CONTROL_PATH, O_RDONLY, 0) ;
+	char state_buf[sizeof(int)] ;
+	int state ;
+	mm_segment_t fs ;
+
+	if (!fout || IS_ERR(fout))
+	{
+		printk ("GomoLSM: [is_enable] load file error\n") ;
+		return -1 ;
+	}
+	
+	fs = get_fs () ;
+	set_fs (KERNEL_DS) ;
+	
+	vfs_read(fout, state_buf, sizeof(int), &fout->f_pos) ;
+	memcpy (&state, state_buf, sizeof(int)) ;
+	
+	set_fs (fs) ;
+	filp_close (fout, NULL) ;
+
+	return state ;
+}
+
 int user_permission (int uid, int op)
 {
 	char role[MAX_ROLENAME+1] ;
@@ -116,6 +142,9 @@ int user_permission (int uid, int op)
 	if (uid <= 999)
 		return 0 ;
 	
+	if (!is_enable())
+		return 0 ;
+
 	if (get_role (uid, role) != 1)
 		return 0 ;
 
