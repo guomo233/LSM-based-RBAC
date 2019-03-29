@@ -48,6 +48,10 @@ Linux安全模块（LSM）是Linux内核的一个轻量级通用访问控制框�
 
 ![avatar](images/6.jpg)
 
+### 角色分配
+
+通过`-ua uid 角色名`可以将角色赋予到对应用户上
+
 #### 修改角色
 
 通过`-uc uid 角色名`可以更新uid用户的角色，如下将`user1`更换为`role_new`
